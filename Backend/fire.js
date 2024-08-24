@@ -29,8 +29,8 @@
     event.preventDefault();
     const email=document.getElementById('rEmail').value;
     const password=document.getElementById('rPassword').value;
-    const firstName=document.getElementById('fName').value;
-    const lastName=document.getElementById('lName').value;
+    const userName=document.getElementById('userName').value;
+    
 
     const auth=getAuth();
     const db=getFirestore();
@@ -40,8 +40,8 @@
         const user=userCredential.user;
         const userData={
             email: email,
-            firstName: firstName,
-            lastName:lastName
+            userName: userName,
+            
         };
         showMessage('Account Created Successfully', 'signUpMessage');
         const docRef=doc(db, "users", user.uid);
@@ -77,7 +77,7 @@
         showMessage('login is successful', 'signInMessage');
         const user=userCredential.user;
         localStorage.setItem('loggedInUserId', user.uid);
-        window.location.href='homepage.html';
+        window.location.href='/Frontend/home.html';
     })
     .catch((error)=>{
         const errorCode=error.code;

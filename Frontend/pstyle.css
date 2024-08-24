@@ -1,42 +1,127 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap");
 
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: "Poppins", sans-serif;
-  background-color: cornflowerblue;
+  text-decoration: none;
 }
 
-header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  padding: 20px 120px;
-  background: #11141a;
+body {
+  background-color: #c9d6ff;
+  background: linear-gradient(to right, #e2e2e2, #c9d6ff);
+}
+
+.navbar {
+  background: rgb(0, 0, 0);
+  font-family: calibri;
+  padding-right: 15px;
+  padding-left: 15px;
+}
+.navdiv {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  z-index: 100;
+  justify-content: space-between;
 }
-
-.logo {
-  font-size: 25px;
-  color: #fff;
-  text-decoration: none;
+.logo a {
+  font-size: 35px;
   font-weight: 600;
+  color: white;
 }
-
-nav a {
-  background-color: #11141a;
+li {
+  list-style: none;
+  display: inline-block;
+}
+li a {
+  color: white;
   font-size: 18px;
-  color: #fff;
-  text-decoration: none;
-  font-weight: 500;
-  transition: 3s;
+  font-weight: bold;
+  margin-right: 25px;
+}
+button {
+  background-color: rgb(108, 101, 101);
+  margin-left: 10px;
+  border-radius: 10px;
+  padding: 10px;
+  width: 90px;
+}
+button a {
+  color: white;
+  font-weight: bold;
+  font-size: 15px;
 }
 
-nav a:hover {
-  color: #0ef;
+h1 {
+  text-align: center;
 }
+
+/* ---- */
+
+.title-card {
+  display: flex;
+  justify-content: center;
+  margin-top: 30px;
+}
+
+.title-card h1 {
+  font-size: 60px;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+main {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  padding: 20px;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+main a {
+  text-decoration: none;
+  color: black;
+}
+
+.card-lost {
+  background: rgba(0, 0, 0, 0.1);
+  display: inline-flex;
+  justify-content: center;
+  padding: 50px 70px;
+  margin-top: 30px;
+  background: rgba(0, 0, 0, 0.1);
+  padding: 50px 70px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  width: 200px;
+  height: 200px;
+}
+
+.card-lost h2 {
+  font-size: 50px;
+  text-align: center;
+}
+
+.card-found {
+  background: rgba(0, 0, 0, 0.1);
+  display: inline-flex;
+  justify-content: center;
+  padding: 50px 70px;
+  margin-top: 30px;
+  background: rgba(0, 0, 0, 0.1);
+  padding: 50px 70px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  width: 200px;
+  height: 200px;
+}
+
+.card-found h2 {
+  font-size: 50px;
+  text-align: center;
+}
+
+/* :hover .card-lost {
+  padding: 60px 80px;
+  transition: 1s;
+}
+
+:hover .card-found {
+  padding: 60px 80px;
+  transition: 1s;
+} */
