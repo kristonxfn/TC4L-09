@@ -1,22 +1,47 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Navigation Bar</title>
     <link rel="stylesheet" href="pstyle.css">
+    <!-- <style type="text/css"> -->
+
+
 </head>
 
 <body>
+    <nav class="navbar">
+        <div class="navdiv">
+            <div class="logo"><a href="/Backend/homepage.html">Profile</a> </div>
+            <ul>
+                <li><a href="/Backend/index.html" id="login">Sign IN</a></li>
+            </ul>
+        </div>
+    </nav>
 
-    <header>
-        <a href="/Backend/homepage.html" class="logo">ActiveLink.</a>
+    <div class="title-card">
+        <h1 id="welcome-header">Welcome <span id="loggedUser"></span></h1>
 
-        <nav>
-            <a href="/Backend/index.html">Log In</a>
-        </nav>
-    </header>
+    </div>
+
+    <main>
+        <a href="lost.html">
+            <div class="card-lost">
+                <h2>Lost</h2>
+            </div>
+        </a>
+
+        <a href="found.html">
+            <div class="card-found">
+                <h2>Found</h2>
+            </div>
+        </a>
+
+    </main>
+
+    <script src="home.js"></script>
 </body>
 
 </html>
