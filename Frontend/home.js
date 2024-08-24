@@ -16,3 +16,42 @@ const firebaseConfig = {
 
   const auth=getAuth();
   const db=getFirestore();
+
+  const loginButton=document.getElementById('login');
+
+  loginButton.addEventListener('click', () => {
+    // Assuming you have a login function that returns a promise
+    loginFunction()
+      .then(() => {
+        window.location.href = '/Backend/index.html';
+      })
+      .catch((error) => {
+        console.error('Login failed:', error);
+      });
+  });
+  
+  
+firebase.auth().onAuthStateChanged(user => {
+  if (user) {
+    // User is signed in
+    const loggedInUserId = localStorage.getItem('loggedInUserId');
+    const userRef = db.collection('users').doc(loggedInUserId);
+    userRef.get()
+      .then(docSnap => {
+        if (docSnap.exists()) {
+          const userData = docSnap.data();
+          document.querySelector('loggedUser').innerText = userData.userName;
+        } else {
+          console.log('User data not found');
+          document.getElementById('loggedUser').innerText = '';
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching user data:', error);
+        document.getElementById('loggedUser').innerText = '';
+      });
+  } else {
+    // User is signed out
+    document.getElementById('loggedUser').innerText = '';
+  }
+});

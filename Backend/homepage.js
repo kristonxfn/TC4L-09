@@ -56,3 +56,14 @@ const firebaseConfig = {
         console.error('Error Signing out:', error);
     })
   })
+
+  const homeButton=document.getElementById('home');
+
+  homeButton.addEventListener('click', () => {
+    try {
+      // Add some logic here if needed
+      window.location.href = '/Frontend/home.html';
+    } catch (error) {
+      console.error('Error redirecting to home page:', error);
+    }
+  });
