@@ -26,9 +26,9 @@ const firebaseConfig = {
         .then((docSnap)=>{
             if(docSnap.exists()){
                 const userData=docSnap.data();
-                document.getElementById('loggedUserFName').innerText=userData.firstName;
+                document.getElementById('loggedUser').innerText=userData.userName;
                 document.getElementById('loggedUserEmail').innerText=userData.email;
-                document.getElementById('loggedUserLName').innerText=userData.lastName;
+               
 
             }
             else{
@@ -56,3 +56,14 @@ const firebaseConfig = {
         console.error('Error Signing out:', error);
     })
   })
+
+  const homeButton=document.getElementById('home');
+
+  homeButton.addEventListener('click', () => {
+    try {
+      // Add some logic here if needed
+      window.location.href = '/Frontend/home.html';
+    } catch (error) {
+      console.error('Error redirecting to home page:', error);
+    }
+  });
