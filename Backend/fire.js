@@ -77,7 +77,7 @@
         showMessage('login is successful', 'signInMessage');
         const user=userCredential.user;
         localStorage.setItem('loggedInUserId', user.uid);
-        window.location.href='/TC4L-09/Frontend/home.html';
+        window.location.href='/TC4L-09/Frontend/User/home.html';
     })
     .catch((error)=>{
         const errorCode=error.code;
