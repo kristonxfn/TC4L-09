@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Found Item</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .found-container {
+            display: flex;
+            max-width: 900px;
+            margin: 50px auto;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 20px 35px rgba(0, 0, 1, 0.9);
+            overflow: hidden;
+        }
+        .image-container {
+            flex: 1;z
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-right: 2px solid #ddd;
+            height: 300px;
+            position: relative;
+        }
+        .image-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #888;
+            font-size: 1.2rem;
+            cursor: pointer;
+            text-align: center;
+            position: absolute;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 10px;
+            transition: opacity 0.3s ease;
+        }
+        #preview-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: none;
+            border-radius: 10px;
+        }
+        .info-container {
+            flex: 1;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        .info-label {
+            font-weight: bold;
+            color: #333;
+        }
+        .info-value {
+            font-size: 1.2rem;
+            color: #555;
+        }
+        .image-input {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="found-container">
+        <div class="image-container" id="image-container">
+            <div class="image-placeholder" id="image-placeholder">Click or Drop Image Here</div>
+            <img id="preview-image" src="#" alt="Preview">
+            <input type="file" id="image-input" class="image-input" accept="image/*">
+        </div>
+
+        <div class="info-container">
+            <div><span class="info-label">Found At:</span> <span class="info-value">FCI CQCR 3002</span></div>
+            <div><span class="info-label">Time Found:</span> <span class="info-value">3:30 PM, August 25, 2024</span></div>
+            <div><span class="info-label">Item:</span> <span class="info-value">iPhone 15</span></div>
+            <div><span class="info-label">Founder Name:</span> <span class="info-value">KISHENRAJ</span></div>
+            <div><span class="info-label">Contact:</span> <span class="info-value">+123 456 7890 / @KISH12211</span></div>
+        </div>
+    </div>
+
+    <script>
+        const imageInput = document.getElementById('image-input');
+        const previewImage = document.getElementById('preview-image');
+        const imagePlaceholder = document.getElementById('image-placeholder');
+
+        function handleImageUpload(file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                previewImage.src = e.target.result;
+                previewImage.style.display = 'block';
+                imagePlaceholder.style.display = 'none';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        imagePlaceholder.addEventListener('click', () => imageInput.click());
+
+        imageInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) handleImageUpload(file);
+        });
+
+        imagePlaceholder.parentElement.addEventListener('dragover', (e) => e.preventDefault());
+        imagePlaceholder.parentElement.addEventListener('drop', (e) => {
+            e.preventDefault();
+            const file = e.dataTransfer.files[0];
+            if (file) handleImageUpload(file);
+        });
+    </script>
+</body>
+</html>

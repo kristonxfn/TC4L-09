@@ -1,20 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link rel="stylesheet" href="form.css">
-    <title>Survey Form</title>
+    <link rel="stylesheet" href="surveylost.css">
+    <title>Survey Lost Form</title>
 </head>
+
 <body>
     <div class="container ">
         <header class="header">
             <h1 id="title">
-                Survey from WEBHUB
+                LOST PAGE
             </h1>
             <p id="description">
-                Thank you for taking the time to help us to improve the plateform
+                Kindly fill the form about your detail and lost item
             </p>
         </header>
         <form action="" id="survey-form">
@@ -28,22 +30,23 @@
 
             <!-- Type Email section -->
             <div class="form-group">
-                <label for="email">Email</label>
-                <input type="email" name="email" id="email" class="formControl" placeholder="Enter your Email" required>
+                <label for="id">MMU ID</label>
+                <input type="number" name="name" id="name" class="formControl" placeholder="Enter your id number"
+                    required>
             </div>
             <!-- end of Email section -->
 
             <!-- Type Number section -->
             <div class="form-group">
-                <label for="phone">Phone Number</label>
-                <input type="number" name="phone" id="phone" class="formControl" placeholder="Enter your phone number" required>
+                <label for="email">Email</label>
+                <input type="email" name="email" id="email" class="formControl" placeholder="Enter your Email" required>
             </div>
             <!-- end of Number section -->
 
             <!-- Type Number section -->
             <div class="form-group">
-                <label for="address">Address <span class="clue">(optional)</span></label>
-                <input type="text" name="address" id="address" class="formControl" placeholder="Enter your address">
+                <label for="phone">Phone Number</label>
+                <input type="number" name="phone" id="phone" class="formControl" placeholder="Enter your phone number">
             </div>
             <!--  end of number section -->
 
@@ -51,7 +54,7 @@
             <div class="form-group">
                 <p id="quest">Which option best describe your current role</p>
                 <select name="role" required id="dropdown" class="formControl">
-                    <option value disabled selected >Select current role</option>
+                    <option value disabled selected>Select current role</option>
                     <option value="student">Student</option>
                     <option value="teacher">Teacher</option>
                     <option value="job">Job</option>
@@ -62,60 +65,51 @@
 
             <!-- radio button section -->
             <div class="form-group">
-                <p id="quest">How you come to know about WEBHUB ?</p>
+                <p id="quest">What type of gadget did you lost?</p>
                 <label for="">
-                    <input type="radio" name="source" value="freinds"
-                    class="inputRadio"
-                    checked> Friends
+                    <input type="radio" name="source" value="phone" class="inputRadio" checked> Phone
                 </label>
                 <label for="">
-                    <input type="radio" name="source" value="tv-ads"
-                    class="inputRadio"
-                    >TV Ads
+                    <input type="radio" name="source" value="laptop" class="inputRadio">Laptop
                 </label>
                 <label for="">
-                    <input type="radio" name="source" value="social-media"
-                    class="inputRadio"
-                    > Social Media
+                    <input type="radio" name="source" value="tablets" class="inputRadio"> Tablets
                 </label>
                 <label for="">
-                    <input type="radio" name="source" value="newspaper"
-                    class="inputRadio"
-                    > Newspaper
+                    <input type="radio" name="source" value="smartwatch" class="inputRadio"> Smartwatch
                 </label>
                 <label for="">
-                    <input type="radio" name="source" value="other"
-                    class="inputRadio"
-                    > Other
+                    <input type="radio" name="source" value="other" class="inputRadio"> Others
                 </label>
             </div>
             <!-- end of radio button -->
 
             <!-- Checkbox section -->
             <div class="form-group">
-                <p id="quest">Would you like to see improved ? </p>
+                <p id="quest">Which location did you lost the item ? </p>
                 <label for="">
-                    <input type="checkbox" name="prefer" class="checkbox" value="front-end-dev"> Front-end Developer
+                    <input type="checkbox" name="prefer" class="checkbox" value="FOE"> Faculty of Engineering
                 </label>
                 <label for="">
-                    <input type="checkbox" name="prefer" class="checkbox" value="back-end-dev"> Back-end Developer
+                    <input type="checkbox" name="prefer" class="checkbox" value="FCI"> Faculty of Computing&Informatic
                 </label>
                 <label for="">
-                    <input type="checkbox" name="prefer" class="checkbox" value="app-dev">  Android App Developer
+                    <input type="checkbox" name="prefer" class="checkbox" value="FOM"> Faculty of Management
                 </label>
                 <label for="">
-                    <input type="checkbox" name="prefer" class="checkbox" value="soft-engineering"> Software Engineering
+                    <input type="checkbox" name="prefer" class="checkbox" value="FCM"> Faculty of Creative Multimedia
                 </label>
                 <label for="">
-                    <input type="checkbox" name="prefer" class="checkbox" value="other"> Other
+                    <input type="checkbox" name="prefer" class="checkbox" value="other"> Others
                 </label>
             </div>
             <!-- End of checkbox section -->
 
             <!-- Textarea section -->
             <div class="form-group">
-                <p id="quest">Give us your feedback</p>
-                <textarea name="feedback"  cols="30" rows="5"  id="feedback" class="textarea" placeholder="Enter your feedback here..."></textarea>
+                <p id="quest">Send us your specific information at here</p>
+                <textarea name="information" cols="30" rows="5" id="information" class="textarea"
+                    placeholder="Enter your information here..."></textarea>
             </div>
             <div class="form-group">
                 <button type="submit" id="submit" class="btn">Submit</button>
@@ -123,4 +117,5 @@
         </form>
     </div>
 </body>
+
 </html>
