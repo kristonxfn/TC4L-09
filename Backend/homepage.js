@@ -62,7 +62,7 @@ const firebaseConfig = {
   homeButton.addEventListener('click', () => {
     try {
       // Add some logic here if needed
-      window.location.href = '/Frontend/home.html';
+      window.location.href = '/TC4L-09/Frontend/home.html';
     } catch (error) {
       console.error('Error redirecting to home page:', error);
     }
