@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="surveylost.css">
+    <title>Survey Form</title>
+    <script src="https://cdn.firebase.com/libs/firebasejs/8.6.1/firebase.js"></script>
+</head>
+
+<body>
+    <div class="container ">
+        <header class="header">
+            <h1 id="title">
+                Lost Survey
+            </h1>
+            <p id="description">
+                information for the item that got lost
+            </p>
+        </header>
+        <form action="post" id="survey-form">
+
+            <!-- Text section -->
+            <div class="form-group">
+                <label for="name">Name</label>
+                <input type="text" name="name" id="name" class="formControl" placeholder="Enter your name" required>
+            </div>
+            <!-- end of text section -->
+
+
+            <!-- Type Number section -->
+            <div class="form-group">
+                <label for="phone">Phone Number</label>
+                <input type="number" name="phone" id="phone" class="formControl" placeholder="Enter your phone number"
+                    required>
+            </div>
+
+            <!-- end of Number section -->
+
+            <!-- Type Number section -->
+            <div class="form-group">
+                <label for="address">Item that got lost <span class="clue"></span></label>
+                <input type="text" name="address" id="address" class="formControl" placeholder="Enter your address">
+            </div>
+            <!--  end of number section -->
+
+            <!-- select section -->
+            <div class="form-group">
+                <p id="quest">Which option best describe your current role</p>
+                <select name="role" required id="dropdown" class="formControl">
+                    <option value disabled selected>Select current role</option>
+                    <option value="student">Student</option>
+                    <option value="teacher">Teacher</option>
+                    <option value="job">staff</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+
+            <!-- Add this to your form -->
+            <div class="form-group">
+                <label for="lost-image">Upload Lost Item Image</label>
+                <input type="file" name="lost-image" id="lost-image" class="formControl" accept="image/*">
+            </div>
+
+            <!-- End of checkbox section -->
+
+            <!-- Textarea section -->
+            <div class="form-group">
+                <p id="quest">More information</p>
+                <textarea name="feedback" cols="30" rows="5" id="feedback" class="textarea"
+                    placeholder="Enter your feedback here..."></textarea>
+            </div>
+            <div class="form-group">
+                <button type="submit" id="submit" class="btn">Submit</button>
+            </div>
+        </form>
+
+        <script src="surveylost.js"></script>
+    </div>
+</body>
+
+</html>
