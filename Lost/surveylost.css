@@ -6,7 +6,7 @@
     --color-darkblue-alpha:rgba(13, 138, 187, 0.8);
     --color-green:#21eb6e;
 }
-::before,*::after{
+,::before,*::after{
     box-sizing: border-box;
 }
 body{
