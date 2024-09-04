@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>lost Home</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
 <style>
@@ -36,6 +37,21 @@
 
 <body>
     <h1><a href="surveylost.html">Hello</a></h1>
+
+    <form>
+        <label for="testing" class="block mt-4">Add Testing :</label>
+        <div class="flex items-center mt-1">
+            <input type="text" name="testing" id="testing"
+                class="w-full border px-4 py-2 border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-400">
+
+            <button type="submit"
+                class="ml-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 foucs:outline-none focus:bg-blue-600">Add</button>
+        </div>
+    </form>
+
+    <ul id="testing-list" class="p-5 border mt-8"></ul>
+
+    <script src="losthome.js"></script>
 </body>
 
 </html>
