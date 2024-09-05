@@ -50,7 +50,7 @@ const firebaseConfig = {
     localStorage.removeItem('loggedInUserId');
     signOut(auth)
     .then(()=>{
-        window.location.href='index.html';
+        window.location.href='/TC4L-09/Backend/index.html';
     })
     .catch((error)=>{
         console.error('Error Signing out:', error);
@@ -62,7 +62,7 @@ const firebaseConfig = {
   homeButton.addEventListener('click', () => {
     try {
       // Add some logic here if needed
-      window.location.href = '/TC4L-09/Frontend/home.html';
+      window.location.href = '/TC4L-09/Frontend/User/home.html';
     } catch (error) {
       console.error('Error redirecting to home page:', error);
     }
