@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js"
-import { getFirestore, setDoc, doc, } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js"
+// import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js"
+// import { getFirestore, setDoc, doc, } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js"
 import { getStorage } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-storage.js"
 import { getDatabase } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-database.js"
  
@@ -15,82 +15,59 @@ import { getDatabase } from "https://www.gstatic.com/firebasejs/10.13.0/firebase
 
  // Initialize Firebase
  const app = initializeApp(firebaseConfig);
- const storage = getStorage(app); // Initialize Firebase Storage
- const database = getDatabase(app); // Initialize Firebase Realtime Database
-
- const surveyForm = document.getElementById('survey-form');
-
- surveyForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-  
-    const name = document.getElementById('name').value;
-    const phone = document.getElementById('phone').value;
-    const address = document.getElementById('address').value;
-    const role = document.getElementById('dropdown').value;
-    const feedback = document.getElementById('feedback').value;
-    const lostImage = document.getElementById('lost-image').files[0];
-  
-    const lostItemData = {
-      name,
-      phone,
-      address,
-      role,
-      feedback,
-    };
-  
-    // Get the current user's ID
-    const userId = firebase.auth().currentUser.uid;
-  
-    // Create a storage reference for the image
-    const storageRef = storage.ref('garage-form.appspot.com/files');
 
 
-// Upload the image to Firebase Storage
-storageRef.child(lostImage.name).put(lostImage)
-.then((snapshot) => {
-  console.log('Image uploaded successfully!');
-  // Get the download URL for the uploaded image
-  snapshot.ref.getDownloadURL()
-    .then((downloadURL) => {
-      lostItemData.image = downloadURL;
+ function showMessage(message, divId){
+  var messageDiv=document.getElementById(divId);
+  messageDiv.style.display="block";
+  messageDiv.innerHTML=message;
+  messageDiv.style.opacity=1;
+  setTimeout(function(){
+      messageDiv.style.opacity=0;
+  },5000);
+}
 
-      // Create a new document in the "lost-surveys" collection
-      const lostSurveysRef = firestore.collection('lost-surveys');
-      lostSurveysRef.add(lostItemData)
-        .then((docRef) => {
-          console.log('Lost survey reported successfully!');
-          // You can also display a success message on the webpage
-          document.getElementById('title').innerText = 'Lost Survey Reported!';
-          document.getElementById('description').innerText = 'Thank you for reporting the lost survey!';
+const lostItem = doc(db,"users",)
+
+const signUp=document.getElementById('submitSignUp');
+ signUp.addEventListener('click', (event)=>{
+    event.preventDefault();
+    const name=document.getElementById('name').value;
+    const phoneNumber=document.getElementById('phoneNumber').value;
+    const lostItem=document.getElementById('lostItem').value;
+    const quest=document.getElementById('quest').value;
+    
+
+    const auth=getAuth();
+    const db=getFirestore();
+
+    createLostForm(auth, email, password)
+    .then((userCredential)=>{
+        const user=userCredential.user;
+        const userData={
+            name: name,
+            phoneNumber: phoneNumber,
+            lostItem: lostItem
+           
+        };
+        showMessage('Form Sumbitted', 'signUpMessage');
+        const docRef=doc(db, "users", user.uid);
+        setDoc(docRef,userData)
+        .then(()=>{
+            window.location.href='/TC4L-09-4/Frontend/User/home.html';
         })
-        .catch((error) => {
-          console.error('Error reporting lost survey:', error);
-          // You can also display an error message on the webpage
-          document.getElementById('title').innerText = 'Error Reporting Lost Survey';
-          document.getElementById('description').innerText = 'Please try again later.';
-        });
+        .catch((error)=>{
+            console.error("error writing document", error);
 
-      // Push the lost item data to the Realtime Database
-      const ref = database.ref('lost-items');
-      ref.push(lostItemData)
-        .then(() => {
-          console.log('Lost item reported successfully!');
-          // You can also display a success message on the webpage
-          document.getElementById('title').innerText = 'Lost Item Reported!';
-          document.getElementById('description').innerText = 'Thank you for reporting the lost item!';
-        })
-        .catch((error) => {
-          console.error('Error reporting lost item:', error);
-          // You can also display an error message on the webpage
-          document.getElementById('title').innerText = 'Error Reporting Lost Item';
-          document.getElementById('description').innerText = 'Please try again later.';
         });
     })
-    .catch((error) => {
-      console.error('Error getting image download URL:', error);
-    });
-})
-.catch((error) => {
-  console.error('Error uploading image:', error);
-});
-});
+    .catch((error)=>{
+        const errorCode=error.code;
+        if(errorCode=='auth/email-already-in-use'){
+            showMessage('Form does not submitted!!!', 'signUpMessage');
+        }
+        else{
+            showMessage('unable get form', 'signUpMessage');
+        }
+    })
+ });
