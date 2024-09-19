@@ -1,106 +1,69 @@
+// Import the required Firebase SDKs
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
-import { getFirestore, collection, getDocs, Timestamp, addDoc} from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-database.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
 
+// Firebase configuration
 const firebaseConfig = {
     apiKey: "AIzaSyBK4x087mtwGGUj7AsrNs0xzJsrhu2OoVQ",
     authDomain: "garage-form.firebaseapp.com",
+    databaseURL: "https://garage-form-default-rtdb.firebaseio.com", // Ensure this matches your database URL
     projectId: "garage-form",
     storageBucket: "garage-form.appspot.com",
     messagingSenderId: "557862900022",
     appId: "1:557862900022:web:6efd51cf1d2ff8ebf62397"
-  };
-  
-  
-/*
-stabalise a connection between ur frontend (index.js) with ur backend (firebase dashboard), 
-using "intializeApp()" provided by the CDN
-*/
+};
+
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const auth = getAuth(app);
 
-/*
-    now we have a connection between frontend and backend --> "app", WE
-    will use our database in our frontend using "getFirestore" by the CDN
-*/
-const db = getFirestore(app);
+// Function to display lost items
+function displayLostItems() {
+    const lostItemsContainer = document.getElementById('lostItemsContainer');
+    const lostItemsRef = ref(db, 'lostItems'); // Reference to the lost items in the database
 
-const ul = document.querySelector("ul");
+    onValue(lostItemsRef, (snapshot) => {
+        lostItemsContainer.innerHTML = ''; // Clear previous items
 
-const addTesting = (testing, id) => {
-  // create a <li> template to be inserted into the <ul>
-  // 1 document = 1 <li>
+        // Check if there are any lost items
+        if (!snapshot.exists()) {
+            lostItemsContainer.innerHTML = '<p>No lost items reported.</p>';
+            return;
+        }
 
-  let html = `
-    <li data-id=${id}>
-      <div>${testing.title}</div>
-      <div>${testing.createdAt.toDate()}</div>
-      <button class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-sm my-2">Delete</button>
-    </li>
-  `;
+        snapshot.forEach(userSnapshot => {
+            // Loop through each user's lost items
+            userSnapshot.forEach(itemSnapshot => {
+                const lostItem = itemSnapshot.val(); // Get item data
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'lost-item';
 
-  ul.innerHTML += html;
-};
+                // Add item details to the div
+                itemDiv.innerHTML = `
+                    <h3>${lostItem.itemName}</h3>
+                    <p>Description: ${lostItem.itemDescription}</p>
+                    <p>Contact Info: ${lostItem.contactInfo}</p>
+                    <p>Reported By: ${userSnapshot.key}</p> <!-- Displaying user ID as the reporter -->
+                `;
 
-// Part 1.1 - get documents of "testing" collection
+                lostItemsContainer.appendChild(itemDiv); // Append item to container
+            });
+        });
+    }, (error) => {
+        console.error('Error fetching data:', error); // Log any errors
+        lostItemsContainer.innerHTML = '<p>Error loading lost items.</p>';
+    });
+}
 
-const fetchTestings = async () => {
-  // get the 'testing collection
-  const testingsCollection = collection(db, "testing");
-  
-  // get the documents inside this 'testing' collection
-  const snapshot = await getDocs(testingsCollection);
-  
-  
-  //snapshot - picture of your database
-  snapshot.forEach((doc) => {
-    console.log(doc.data());
-    console.log(doc.id);
-    console.log('----------')
-    addTesting(doc.data(), doc.id)
-  });
-  
-};
-  
-fetchTestings();
-  
-//-------------------------------------------------
-//Part 1.2 - add document
+// Check if the user is authenticated
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        displayLostItems(); // Fetch and display lost items if user is logged in
+    } else {
+        window.location.href = 'login.html'; // Redirect to login if not authenticated
+    }
+});
 
-const form = document.querySelector("form")
-
-form.addEventListener("submit", async (event)=>{
-  event.preventDefault()//prevent refreshing the page
-
-
-  //(i) extract data from <form>
-  const input = form.testing.value.trim()
-
-  //(ii) create a data object
-
-  const now = new Date()
-
-  //(iii)construct an object to be posted to the database
-
-  const testing = {
-    title : input,
-    createdAt: Timestamp.fromDate(now)
-  }
-
-  console.log(testing)
-
-  form.reset()
-
-  //(iv) post this testing object into to the firestore
-
-  //question: does posting data in db always successful --> no
-  //solution: try/catch
-
-  try{
-    const testingsCollection = collection(db, "testing")
-    const docRef = await addDoc(testingsCollection, testing)
-    console.log(`Document written with ID: ${docRef.id}`)
-
-  } catch(error){
-    console.error(`Error adding testing to database: ${error.message}`)
-  }
-
-})
+console.log('Data snapshot:', snapshot.val());

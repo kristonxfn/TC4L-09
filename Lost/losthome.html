@@ -4,8 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>lost Home</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Lost Home</title>
+    <script type="module" src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/10.13.0/firebase-database.js"></script>
 </head>
 
 <style>
@@ -23,35 +25,108 @@
 
     a {
         display: block;
-        /* updated display property */
         text-decoration: none;
         color: black;
         background-color: rgb(64, 134, 239);
         margin: 20px auto;
-        /* center horizontally */
         padding: 15px;
         text-align: center;
-        /* center text horizontally */
+    }
+
+    button {
+        background-color: aquamarine;
+        padding: 20px;
+        margin-left: 40px;
+        margin-right: 40px;
+    }
+
+    .lost-item {
+        border: 1px solid #ccc;
+        margin: 10px;
+        padding: 10px;
+        border-radius: 5px;
+        background-color: white;
     }
 </style>
 
 <body>
-    <h1><a href="surveylost.html">Hello</a></h1>
+    <h1>
+        <a href="surveylost.html">
+            <button>Lost Survey</button>
+        </a>
+        <a href="/TC4L-09/Frontend/User/home.html">
+            <button>Return</button>
+        </a>
+    </h1>
 
-    <form>
-        <label for="testing" class="block mt-4">Add Testing :</label>
-        <div class="flex items-center mt-1">
-            <input type="text" name="testing" id="testing"
-                class="w-full border px-4 py-2 border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-400">
+    <div id="lostItemsContainer"></div>
 
-            <button type="submit"
-                class="ml-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 foucs:outline-none focus:bg-blue-600">Add</button>
-        </div>
-    </form>
+    <script type="module">
+        // Import Firebase services
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-database.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
 
-    <ul id="testing-list" class="p-5 border mt-8"></ul>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBK4x087mtwGGUj7AsrNs0xzJsrhu2OoVQ",
+            authDomain: "garage-form.firebaseapp.com",
+            databaseURL: "https://garage-form-default-rtdb.firebaseio.com",
+            projectId: "garage-form",
+            storageBucket: "garage-form.appspot.com",
+            messagingSenderId: "557862900022",
+            appId: "1:557862900022:web:6efd51cf1d2ff8ebf62397"
+        };
 
-    <script src="losthome.js"></script>
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const auth = getAuth(app);
+
+        // Function to display lost items
+        function displayLostItems() {
+            const lostItemsContainer = document.getElementById('lostItemsContainer');
+            const user = auth.currentUser; // Get the current authenticated user
+            const lostItemsRef = ref(db, `lostItems/${user.uid}`); // Reference to the user's lost items in the database
+
+            onValue(lostItemsRef, (snapshot) => {
+                lostItemsContainer.innerHTML = ''; // Clear previous items
+
+                // Check if there are any lost items
+                if (!snapshot.exists()) {
+                    lostItemsContainer.innerHTML = '<p>No lost items reported.</p>';
+                    return;
+                }
+
+                snapshot.forEach(itemSnapshot => {
+                    const lostItem = itemSnapshot.val(); // Get item data
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = 'lost-item';
+
+                    // Add item details to the div
+                    itemDiv.innerHTML = `
+                        <h3>${lostItem.itemName}</h3>
+                        <p>Description: ${lostItem.itemDescription}</p>
+                        <p>Contact Info: ${lostItem.contactInfo}</p>
+                    `;
+
+                    lostItemsContainer.appendChild(itemDiv); // Append item to container
+                });
+            }, (error) => {
+                console.error('Error fetching data:', error); // Log any errors
+                lostItemsContainer.innerHTML = '<p>Error loading lost items.</p>';
+            });
+        }
+
+        // Check if the user is authenticated
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                displayLostItems(); // Fetch and display lost items if user is logged in
+            } else {
+                window.location.href = 'login.html'; // Redirect to login if not authenticated
+            }
+        });
+    </script>
 </body>
 
 </html>
