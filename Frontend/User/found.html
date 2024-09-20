@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Found Home</title>
+    <script type="module" src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/10.13.0/firebase-database.js"></script>
+</head>
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "poppins", sans-serif;
+    }
+
+    body {
+        background-color: #c9d6ff;
+        background: linear-gradient(to right, #e2e2e2, #c9d6ff);
+    }
+
+    a {
+        display: block;
+        text-decoration: none;
+        color: black;
+        background-color: rgb(64, 134, 239);
+        margin: 20px auto;
+        padding: 15px;
+        text-align: center;
+    }
+
+    button {
+        background-color: aquamarine;
+        padding: 20px;
+        margin-left: 40px;
+        margin-right: 40px;
+    }
+
+    .lost-item {
+        border: 1px solid #ccc;
+        margin: 10px;
+        padding: 10px;
+        border-radius: 5px;
+        background-color: white;
+    }
+</style>
+
+<body>
+    <h1>
+        <a href="foundsurvey.html">
+            <button>Found Survey</button>
+        </a>
+        <a href="/TC4L-09/Frontend/User/home.html">
+            <button>Return</button>
+        </a>
+    </h1>
+
+    <div id="lostItemsContainer"></div>
+
+    <script type="module">
+        // Import Firebase services
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-database.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
+    
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBK4x087mtwGGUj7AsrNs0xzJsrhu2OoVQ",
+            authDomain: "garage-form.firebaseapp.com",
+            databaseURL: "https://garage-form-default-rtdb.firebaseio.com",
+            projectId: "garage-form",
+            storageBucket: "garage-form.appspot.com",
+            messagingSenderId: "557862900022",
+            appId: "1:557862900022:web:6efd51cf1d2ff8ebf62397"
+        };
+    
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const auth = getAuth(app);
+    
+        // Function to display found items
+        function displayFoundItems() {
+            const foundItemsContainer = document.getElementById('foundItemsContainer'); // Update this ID in your HTML
+            const user = auth.currentUser; // Get the current authenticated user
+            const foundItemsRef = ref(db, `foundItems/${user.uid}`); // Reference to the user's found items in the database
+    
+            onValue(foundItemsRef, (snapshot) => {
+                foundItemsContainer.innerHTML = ''; // Clear previous items
+    
+                // Check if there are any found items
+                if (!snapshot.exists()) {
+                    foundItemsContainer.innerHTML = '<p>No found items reported.</p>';
+                    return;
+                }
+    
+                snapshot.forEach(itemSnapshot => {
+                    const foundItem = itemSnapshot.val(); // Get item data
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = 'found-item'; // Change class name if necessary
+    
+                    // Add item details to the div
+                    itemDiv.innerHTML = `
+                        <h3>${foundItem.itemName}</h3>
+                        <p>Description: ${foundItem.itemDescription}</p>
+                        <p>Contact Info: ${foundItem.contactInfo}</p>
+                    `;
+    
+                    foundItemsContainer.appendChild(itemDiv); // Append item to container
+                });
+            }, (error) => {
+                console.error('Error fetching data:', error); // Log any errors
+                foundItemsContainer.innerHTML = '<p>Error loading found items.</p>';
+            });
+        }
+    
+        // Check if the user is authenticated
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                displayFoundItems(); // Fetch and display found items if user is logged in
+            } else {
+                window.location.href = 'login.html'; // Redirect to login if not authenticated
+            }
+        });
+    </script>
+    
+</body>
+
+</html>
