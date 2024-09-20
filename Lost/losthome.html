@@ -59,14 +59,17 @@
         </a>
     </h1>
 
+    <div id="userDataContainer"></div>
     <div id="lostItemsContainer"></div>
+
+    
 
     <script type="module">
         // Import Firebase services
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
         import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-database.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
-
+    
         // Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyBK4x087mtwGGUj7AsrNs0xzJsrhu2OoVQ",
@@ -77,56 +80,87 @@
             messagingSenderId: "557862900022",
             appId: "1:557862900022:web:6efd51cf1d2ff8ebf62397"
         };
-
+    
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
         const auth = getAuth(app);
 
-        // Function to display lost items
+
+    // Function to transfer data from Firestore to Realtime Database
+    async function transferData() {
+        const collectionRef = collection(firestore, "users/userID/lost"); // Replace userID with the actual user's ID
+        const snapshot = await getDocs(collectionRef);
+
+        const promises = snapshot.docs.map(async (doc) => {
+            const data = doc.data();
+            const itemRef = ref(database, `yourRealtimeDBPath/${doc.id}`); // Change the path as needed
+            await set(itemRef, data);
+        });
+
+        await Promise.all(promises);
+        console.log("Data transferred successfully!");
+    }
+
+    // Call the transfer function
+    transferData().catch(console.error);
+    
+        // Function to display lost items in real time
         function displayLostItems() {
             const lostItemsContainer = document.getElementById('lostItemsContainer');
             const user = auth.currentUser; // Get the current authenticated user
-            const lostItemsRef = ref(db, `lostItems/${user.uid}`); // Reference to the user's lost items in the database
-
+    
+            if (!user) {
+                window.location.href = 'login.html'; // Redirect to login if user is not authenticated
+                return;
+            }
+    
+            const lostItemsRef = ref(db, `users/${user.uid}/lost`); // Reference to user's lost items
+    
+            // Listen for real-time updates using onValue
             onValue(lostItemsRef, (snapshot) => {
                 lostItemsContainer.innerHTML = ''; // Clear previous items
-
-                // Check if there are any lost items
+    
+                // If no lost items exist
                 if (!snapshot.exists()) {
                     lostItemsContainer.innerHTML = '<p>No lost items reported.</p>';
                     return;
                 }
-
+    
+                // Loop through each lost item and create a div for each
                 snapshot.forEach(itemSnapshot => {
-                    const lostItem = itemSnapshot.val(); // Get item data
+                    const lostItem = itemSnapshot.val(); // Get lost item data
                     const itemDiv = document.createElement('div');
                     itemDiv.className = 'lost-item';
-
-                    // Add item details to the div
+    
+                    // Populate the item div with lost item details
                     itemDiv.innerHTML = `
-                        <h3>${lostItem.itemName}</h3>
-                        <p>Description: ${lostItem.itemDescription}</p>
-                        <p>Contact Info: ${lostItem.contactInfo}</p>
+                        <h3>Item Name: ${lostItem.itemName}</h3>
+                        <p><strong>Description:</strong> ${lostItem.itemDescription}</p>
+                        <p><strong>Contact Info:</strong> ${lostItem.contactInfo}</p>
                     `;
-
-                    lostItemsContainer.appendChild(itemDiv); // Append item to container
+    
+                    // Append each item to the container
+                    lostItemsContainer.appendChild(itemDiv);
                 });
             }, (error) => {
-                console.error('Error fetching data:', error); // Log any errors
-                lostItemsContainer.innerHTML = '<p>Error loading lost items.</p>';
+                console.error('Error fetching data:', error); // Enhanced error logging
+                lostItemsContainer.innerHTML = '<p>Error loading lost items: ' + error.message + '</p>'; // Display error message
             });
         }
-
-        // Check if the user is authenticated
+        // Listen for authentication state changes
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                displayLostItems(); // Fetch and display lost items if user is logged in
+                console.log("User is authenticated:", user);
+                displayLostItems(); // Fetch and display lost items in real time
             } else {
+                console.log("User is not authenticated.");
                 window.location.href = 'login.html'; // Redirect to login if not authenticated
             }
         });
     </script>
+    
+    
 </body>
 
 </html>
