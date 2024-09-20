@@ -3,19 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Survey Form</title>
-    <link rel="stylesheet" href="surveylost.css">
+    <title>Found Item Survey</title>
+    <link rel="stylesheet" href="surveyfound.css">
     <!-- Replace with the modular Firebase SDK -->
-    <script type="module" src="surveylost.js"></script>
+    <script type="module" src="surveyfound.js"></script>
 </head>
 
 <body>
-    <h1>Report a Lost Item</h1>
-    <form id="lostForm">
+    <h1>Report a Found Item</h1>
+    <form id="foundForm"> <!-- Changed id to foundForm -->
         <input type="text" id="itemName" placeholder="Item Name" required>
         <input type="text" id="itemDescription" placeholder="Item Description" required>
         <input type="text" id="contactInfo" placeholder="Contact Info" required>
-        <button type="submit">Submit</button>
+        <button type="submit">Submit Found Item</button> <!-- Updated button text -->
     </form>
 </body>
 </html>

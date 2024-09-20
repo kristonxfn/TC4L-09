@@ -24,46 +24,58 @@
         messageDiv.style.opacity=0;
     },5000);
  }
- const signUp=document.getElementById('submitSignUp');
- signUp.addEventListener('click', (event)=>{
-    event.preventDefault();
-    const email=document.getElementById('rEmail').value;
-    const password=document.getElementById('rPassword').value;
-    const userName=document.getElementById('userName').value;
-    
+ const signUp = document.getElementById('submitSignUp');
+signUp.addEventListener('click', (event) => {
+  event.preventDefault();
+  const email = document.getElementById('rEmail').value;
+  const password = document.getElementById('rPassword').value;
+  const userName = document.getElementById('userName').value;
 
-    const auth=getAuth();
-    const db=getFirestore();
+  const auth = getAuth();
+  const db = getFirestore();
 
-    createUserWithEmailAndPassword(auth, email, password)
-    .then((userCredential)=>{
-        const user=userCredential.user;
-        const userData={
-            email: email,
-            userName: userName,
-            
-        };
-        showMessage('Account Created Successfully', 'signUpMessage');
-        const docRef=doc(db, "users", user.uid);
-        setDoc(docRef,userData)
-        .then(()=>{
-            window.location.href='index.html';
+  createUserWithEmailAndPassword(auth, email, password)
+    .then((userCredential) => {
+      const user = userCredential.user;
+      const userData = {
+        email: email,
+        userName: userName,
+      };
+      showMessage('Account Created Successfully', 'signUpMessage');
+
+      const docRef = doc(db, "users", user.uid);
+      setDoc(docRef, userData)
+        .then(() => {
+          // Create a subcollection called "orders" under the user document
+          const userDoc = doc(db, "users", user.uid);
+          const ordersSubcollection = collection(userDoc, 'orders');
+          // Add a document to the "orders" subcollection
+          addDoc(ordersSubcollection, {
+            orderDate: new Date(),
+            totalPrice: 100,
+            items: [], // You should replace this with the actual order items
+          })
+            .then(() => {
+              console.log('Order document added successfully');
+            })
+            .catch((error) => {
+              console.error('Error adding order document:', error);
+            });
+          window.location.href = 'index.html';
         })
-        .catch((error)=>{
-            console.error("error writing document", error);
-
+        .catch((error) => {
+          console.error("Error writing document", error);
         });
     })
-    .catch((error)=>{
-        const errorCode=error.code;
-        if(errorCode=='auth/email-already-in-use'){
-            showMessage('Email Address Already Exists !!!', 'signUpMessage');
-        }
-        else{
-            showMessage('unable to create User', 'signUpMessage');
-        }
-    })
- });
+    .catch((error) => {
+      const errorCode = error.code;
+      if (errorCode == 'auth/email-already-in-use') {
+        showMessage('Email Address Already Exists !!!', 'signUpMessage');
+      } else {
+        showMessage('Unable to create User', 'signUpMessage');
+      }
+    });
+});
 
  const signIn=document.getElementById('submitSignIn');
  signIn.addEventListener('click', (event)=>{
