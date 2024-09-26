@@ -8,159 +8,134 @@
     <script type="module" src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js"></script>
     <script type="module" src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js"></script>
     <script type="module" src="https://www.gstatic.com/firebasejs/10.13.0/firebase-database.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "poppins", sans-serif;
+        }
+
+        body {
+            background-color: #c9d6ff;
+            background: linear-gradient(to right, #e2e2e2, #c9d6ff);
+        }
+
+        a {
+            display: block;
+            text-decoration: none;
+            color: black;
+            background-color: rgb(64, 134, 239);
+            margin: 20px auto;
+            padding: 15px;
+            text-align: center;
+        }
+
+        button {
+            background-color: aquamarine;
+            padding: 20px;
+            margin-left: 40px;
+            margin-right: 40px;
+        }
+
+        .lost-item {
+            border: 1px solid #ccc;
+            margin: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: white;
+        }
+    </style>
+
+
 </head>
 
-<style>
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        font-family: "poppins", sans-serif;
-    }
-
-    body {
-        background-color: #c9d6ff;
-        background: linear-gradient(to right, #e2e2e2, #c9d6ff);
-    }
-
-    a {
-        display: block;
-        text-decoration: none;
-        color: black;
-        background-color: rgb(64, 134, 239);
-        margin: 20px auto;
-        padding: 15px;
-        text-align: center;
-    }
-
-    button {
-        background-color: aquamarine;
-        padding: 20px;
-        margin-left: 40px;
-        margin-right: 40px;
-    }
-
-    .lost-item {
-        border: 1px solid #ccc;
-        margin: 10px;
-        padding: 10px;
-        border-radius: 5px;
-        background-color: white;
-    }
-</style>
-
 <body>
-    <h1>
-        <a href="surveylost.html">
-            <button>Lost Survey</button>
-        </a>
-        <a href="/TC4L-09/Frontend/User/home.html">
-            <button>Return</button>
-        </a>
-    </h1>
+    <h1>Lost Items Dashboard</h1>
+    <div id="lostItemsContainer"></div>
+    <button onclick="window.location.href='allLostItems.html'">View All Lost Items</button>
+    <nav>
+        <a href="surveylost.html"><button>Lost Survey</button></a>
+        <a href="/TC4L-09/Frontend/User/home.html"><button>Return</button></a>
+    </nav>
 
-    <div id="userDataContainer"></div>
+    <h2>Your Lost Items</h2>
     <div id="lostItemsContainer"></div>
 
-    
-
     <script type="module">
-        // Import Firebase services
+        // Import Firebase services using the modular SDK
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
-        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-database.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
-    
-        // Firebase configuration
+        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+
+        // Firebase configuration object
         const firebaseConfig = {
             apiKey: "AIzaSyBK4x087mtwGGUj7AsrNs0xzJsrhu2OoVQ",
             authDomain: "garage-form.firebaseapp.com",
-            databaseURL: "https://garage-form-default-rtdb.firebaseio.com",
             projectId: "garage-form",
             storageBucket: "garage-form.appspot.com",
             messagingSenderId: "557862900022",
             appId: "1:557862900022:web:6efd51cf1d2ff8ebf62397"
         };
-    
+
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
+        const db = getFirestore(app);
         const auth = getAuth(app);
 
-
-    // Function to transfer data from Firestore to Realtime Database
-    async function transferData() {
-        const collectionRef = collection(firestore, "users/userID/lost"); // Replace userID with the actual user's ID
-        const snapshot = await getDocs(collectionRef);
-
-        const promises = snapshot.docs.map(async (doc) => {
-            const data = doc.data();
-            const itemRef = ref(database, `yourRealtimeDBPath/${doc.id}`); // Change the path as needed
-            await set(itemRef, data);
-        });
-
-        await Promise.all(promises);
-        console.log("Data transferred successfully!");
-    }
-
-    // Call the transfer function
-    transferData().catch(console.error);
-    
-        // Function to display lost items in real time
-        function displayLostItems() {
+        // Function to display lost items in a table
+        async function displayLostItems() {
             const lostItemsContainer = document.getElementById('lostItemsContainer');
-            const user = auth.currentUser; // Get the current authenticated user
-    
+            const user = auth.currentUser;
+
             if (!user) {
-                window.location.href = 'login.html'; // Redirect to login if user is not authenticated
+                window.location.href = 'login.html';
                 return;
             }
-    
-            const lostItemsRef = ref(db, `users/${user.uid}/lost`); // Reference to user's lost items
-    
-            // Listen for real-time updates using onValue
-            onValue(lostItemsRef, (snapshot) => {
-                lostItemsContainer.innerHTML = ''; // Clear previous items
-    
-                // If no lost items exist
-                if (!snapshot.exists()) {
-                    lostItemsContainer.innerHTML = '<p>No lost items reported.</p>';
-                    return;
-                }
-    
-                // Loop through each lost item and create a div for each
-                snapshot.forEach(itemSnapshot => {
-                    const lostItem = itemSnapshot.val(); // Get lost item data
-                    const itemDiv = document.createElement('div');
-                    itemDiv.className = 'lost-item';
-    
-                    // Populate the item div with lost item details
-                    itemDiv.innerHTML = `
-                        <h3>Item Name: ${lostItem.itemName}</h3>
-                        <p><strong>Description:</strong> ${lostItem.itemDescription}</p>
-                        <p><strong>Contact Info:</strong> ${lostItem.contactInfo}</p>
+
+            try {
+                const lostCollectionRef = collection(db, 'users', user.uid, 'Lost');
+                const lostSnapshot = await getDocs(lostCollectionRef);
+
+                let tableHTML = `
+                    <table>
+                        <tr>
+                            <th>Item Name</th>
+                            <th>Description</th>
+                            <th>Contact Info</th>
+                        </tr>
+                `;
+
+                lostSnapshot.forEach((itemDoc) => {
+                    const lostItem = itemDoc.data();
+                    console.log('Lost item:', lostItem);
+                    tableHTML += `
+                        <tr>
+                            <td>${lostItem.itemName || 'N/A'}</td>
+                            <td>${lostItem.itemDescription || 'N/A'}</td>
+                            <td>${lostItem.contactInfo || 'N/A'}</td>
+                        </tr>
                     `;
-    
-                    // Append each item to the container
-                    lostItemsContainer.appendChild(itemDiv);
                 });
-            }, (error) => {
-                console.error('Error fetching data:', error); // Enhanced error logging
-                lostItemsContainer.innerHTML = '<p>Error loading lost items: ' + error.message + '</p>'; // Display error message
-            });
+
+                tableHTML += '</table>';
+                lostItemsContainer.innerHTML = tableHTML;
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                lostItemsContainer.innerHTML = '<p>Error loading lost items: ' + error.message + '</p>';
+            }
         }
+
         // Listen for authentication state changes
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 console.log("User is authenticated:", user);
-                displayLostItems(); // Fetch and display lost items in real time
+                displayLostItems();
             } else {
                 console.log("User is not authenticated.");
-                window.location.href = 'login.html'; // Redirect to login if not authenticated
             }
         });
     </script>
-    
-    
 </body>
 
 </html>

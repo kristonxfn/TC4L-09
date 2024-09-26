@@ -26,14 +26,23 @@ async function createLostCollectionForUser(data) {
       if (user) {
         // Reference to the 'Lost' collection inside the user's UID
         const lostCollectionRef = collection(db, 'users', user.uid, 'Lost');
+                    // Reference to the 'AllLostItems' collection
+                    const allLostItemsRef = collection(db, 'AllLostItems');
   
         // Add a new document to the 'Lost' collection with the provided data
         await addDoc(lostCollectionRef, {
           ...data,
           timestamp: serverTimestamp() // Capture time of submission
         });
+        // Add the same document to the 'AllLostItems' collection
+        await addDoc(allLostItemsRef, {
+          ...data,
+          userId: user.uid,
+          timestamp: serverTimestamp() // Capture time of submission
+      });
   
         console.log(`New document added to 'Lost' collection for user: ${user.uid}`);
+        console.log(`New document added to 'AllLostItems' collection`);
       } else {
         console.log('User is not authenticated.');
       }
