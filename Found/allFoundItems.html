@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Found Items List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .item-card {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        .item-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        .item-details {
+            padding: 15px;
+        }
+        .item-details h2 {
+            margin-top: 0;
+            color: #333;
+        }
+        .item-details p {
+            margin: 5px 0;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Found Items List</h1>
+        <div id="items-container" class="items-grid">
+           
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
+
+        // Firebase configuration object
+        const firebaseConfig = {
+            apiKey: "AIzaSyBK4x087mtwGGUj7AsrNs0xzJsrhu2OoVQ",
+            authDomain: "garage-form.firebaseapp.com",
+            projectId: "garage-form",
+            storageBucket: "garage-form.appspot.com",
+            messagingSenderId: "557862900022",
+            appId: "1:557862900022:web:6efd51cf1d2ff8ebf62397",
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        // Function to create an item card
+        function createItemCard(item) {
+            return `
+                <div class="item-card">
+                    <img src="${item.imageUrl}" alt="${item.item}" class="item-image">
+                    <div class="item-details">
+                        <h2>${item.item}</h2>
+                        <p><strong>Found At:</strong> ${item.foundAt}</p>
+                        <p><strong>Time Found:</strong> ${new Date(item.timeFound).toLocaleString()}</p>
+                        <p><strong>Founder:</strong> ${item.founderName}</p>
+                        <p><strong>Contact:</strong> ${item.contact}</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Function to fetch and display found items
+        async function displayFoundItems(userId) {
+            const itemsContainer = document.getElementById('items-container');
+            itemsContainer.innerHTML = ''; // Clear existing content
+
+            try {
+                const querySnapshot = await getDocs(collection(db, 'users', userId, 'Found'));
+                querySnapshot.forEach((doc) => {
+                    const item = doc.data();
+                    const itemCard = createItemCard(item);
+                    itemsContainer.innerHTML += itemCard;
+                });
+
+                if (querySnapshot.empty) {
+                    itemsContainer.innerHTML = '<p>No found items to display.</p>';
+                }
+            } catch (error) {
+                console.error("Error fetching found items:", error);
+                itemsContainer.innerHTML = '<p>Error loading found items. Please try again later.</p>';
+            }
+        }
+
+        // Check authentication state and fetch items
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                displayFoundItems(user.uid);
+            } else {
+                const itemsContainer = document.getElementById('items-container');
+                itemsContainer.innerHTML = '<p>Please log in to view found items.</p>';
+            }
+        });
+    </script>
+</body>
+</html>
