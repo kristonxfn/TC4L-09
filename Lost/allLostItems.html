@@ -5,11 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>All Lost Items</title>
     <script type="module">
-        // Import Firebase services using the modular SDK
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
         import { getFirestore, collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 
-        // Firebase configuration object
         const firebaseConfig = {
             apiKey: "AIzaSyBK4x087mtwGGUj7AsrNs0xzJsrhu2OoVQ",
             authDomain: "garage-form.firebaseapp.com",
@@ -19,81 +17,110 @@
             appId: "1:557862900022:web:6efd51cf1d2ff8ebf62397"
         };
 
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Function to display all lost items in a table
-        async function displayAllLostItems() {
-            const allLostItemsContainer = document.getElementById('allLostItemsContainer');
+        async function fetchUserData(userDoc) {
+            const userId = userDoc.id;
+            const userDocRef = doc(db, 'users', userId);
+            const userDocSnap = await getDoc(userDocRef);
+            const userData = userDocSnap.data();
 
-            try {
-                const usersCollectionRef = collection(db, 'users');
-                const usersSnapshot = await getDocs(usersCollectionRef);
+            const lostCollectionRef = collection(db, 'users', userId, 'Lost');
+            const lostSnapshot = await getDocs(lostCollectionRef);
 
-                let tableHTML = `
-                    <table>
-                        <tr>
-                            <th>Item Name</th>
-                            <th>Description</th>
-                            <th>Contact Info</th>
-                            <th>Username</th>
-                        </tr>
-                `;
+            const lostItems = [];
+            lostSnapshot.forEach((itemDoc) => {
+                const lostItem = itemDoc.data();
+                lostItems.push({
+                    itemName: lostItem.itemName || 'N/A',
+                    itemDescription: lostItem.itemDescription || 'N/A',
+                    contactInfo: lostItem.contactInfo || 'N/A',
+                    username: userData?.userName || 'N/A'
+                });
+            });
 
-                for (const userDoc of usersSnapshot.docs) {
-                    const userId = userDoc.id;
-                    const userDocRef = doc(db, 'users', userId);
-                    const userDocSnap = await getDoc(userDocRef);
-                    const userData = userDocSnap.data();
-                    const username = userData?.userName || 'N/A';
-
-                    const lostCollectionRef = collection(db, 'users', userId, 'Lost');
-                    const lostSnapshot = await getDocs(lostCollectionRef);
-
-                    lostSnapshot.forEach((itemDoc) => {
-                        const lostItem = itemDoc.data();
-                        console.log('Lost item:', lostItem);
-                        tableHTML += `
-                            <tr>
-                                <td>${lostItem.itemName || 'N/A'}</td>
-                                <td>${lostItem.itemDescription || 'N/A'}</td>
-                                <td>${lostItem.contactInfo || 'N/A'}</td>
-                                <td>${username}</td>
-                            </tr>
-                        `;
-                    });
-                }
-
-                tableHTML += '</table>';
-                allLostItemsContainer.innerHTML = tableHTML;
-            } catch (error) {
-                console.error('Error fetching data:', error);
-                allLostItemsContainer.innerHTML = '<p>Error loading lost items: ' + error.message + '</p>';
-            }
+            return lostItems;
         }
 
-        // Call the function to display all lost items when the page loads
+        async function displayAllLostItems() {
+            const allLostItemsContainer = document.getElementById('allLostItemsContainer');
+            const usersCollectionRef = collection(db, 'users');
+            const usersSnapshot = await getDocs(usersCollectionRef);
+
+            let tableHTML = `
+                <table>
+                    <tr>
+                        <th>Item Name</th>
+                        <th>Description</th>
+                        <th>Contact Info</th>
+                        <th>Username</th>
+                    </tr>
+            `;
+
+            const allLostItemsPromises = usersSnapshot.docs.map(userDoc => fetchUserData(userDoc));
+            const allLostItemsArray = await Promise.all(allLostItemsPromises);
+
+            allLostItemsArray.flat().forEach(lostItem => {
+                tableHTML += `
+                    <tr>
+                        <td>${lostItem.itemName}</td>
+                        <td>${lostItem.itemDescription}</td>
+                        <td>${lostItem.contactInfo}</td>
+                        <td>${lostItem.username}</td>
+                    </tr>
+                `;
+            });
+
+            tableHTML += '</table>';
+            allLostItemsContainer.innerHTML = tableHTML;
+        }
+
         window.onload = displayAllLostItems;
     </script>
 </head>
 <style>
-       * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: "poppins", sans-serif;
-        }
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Poppins", sans-serif;
+    }
 
-        body {
-            background-color: #c9d6ff;
-            background: linear-gradient(to right, #e2e2e2, #c9d6ff);
-        }
+    body {
+        background: linear-gradient(to right, #e2e2e2, #c9d6ff);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        padding: 20px;
+    }
 
-        tr{
-            background-color: white;
-        }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        background-color: white;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
 
+    th, td {
+        padding: 15px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+
+    th {
+        background-color: #f4f4f4;
+        font-weight: bold;
+    }
+
+    tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
+
+    tr:hover {
+        background-color: #f1f1f1;
+    }
 </style>
 <body>
     <div id="allLostItemsContainer"></div>
